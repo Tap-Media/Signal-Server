@@ -1,8 +1,6 @@
 FROM maven:3.9.6-eclipse-temurin-21 AS builder
 
 WORKDIR /app
-COPY pom.xml .
-RUN mvn -f pom.xml dependency:go-offline
 
 COPY . .
 RUN mvn clean package -pl service -am -Pexclude-spam-filter -DskipTests
