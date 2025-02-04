@@ -10,7 +10,7 @@ FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 
-COPY --from=builder /app/service/target/TextSecureServer-20250131.1.1-dirty-SNAPSHOT.jar /app/signal-server.jar
+COPY --from=builder /app/service/target/TextSecureServer-20250131.1.1-SNAPSHOT.jar /app/signal-server.jar
 RUN mkdir /app/config
 RUN ls -al /app
 EXPOSE 50051
