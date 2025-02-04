@@ -5,6 +5,7 @@ on:
 
 env:
   IMAGE_REPO_NAME: 767828741221.dkr.ecr.ap-southeast-1.amazonaws.com/signal/signal-server
+  DOCKER_BUILDKIT: 0
 
 jobs:
   build-and-push-image:
@@ -36,10 +37,12 @@ jobs:
         id: timestamp
         run: echo "TIMESTAMP=$(date +%s)" >> $GITHUB_ENV
 
-      - name: Build and push Docker image to ECR
-        id: push
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}-${{ env.TIMESTAMP }}
+
+      - name: Build Docker Image (without BuildKit)
+        run: |
+          export DOCKER_BUILDKIT=0
+          docker build -t $IMAGE_REPO_NAME:${{ env.TIMESTAMP }} .
+
+      - name: Push Docker Image to ECR
+        run: |
+          docker push $IMAGE_REPO_NAME:${{ env.TIMESTAMP }}
