@@ -549,8 +549,9 @@ public class WhisperServerService extends Application<WhisperServerConfiguration
         .maxThreads(2)
         .minThreads(2)
         .build();
-    ExecutorService keyTransparencyCallbackExecutor = environment.lifecycle()
-        .virtualExecutorService(name(getClass(), "keyTransparency-%d"));
+    // daonv - Disable keyTransparency
+//    ExecutorService keyTransparencyCallbackExecutor = environment.lifecycle()
+//        .virtualExecutorService(name(getClass(), "keyTransparency-%d"));
     ExecutorService googlePlayBillingExecutor = environment.lifecycle()
         .virtualExecutorService(name(getClass(), "googlePlayBilling-%d"));
     ExecutorService appleAppStoreExecutor = environment.lifecycle()
@@ -596,13 +597,14 @@ public class WhisperServerService extends Application<WhisperServerConfiguration
 
     RegistrationServiceClient registrationServiceClient = config.getRegistrationServiceConfiguration()
         .build(environment, registrationCallbackExecutor, registrationIdentityTokenRefreshExecutor);
-    KeyTransparencyServiceClient keyTransparencyServiceClient = new KeyTransparencyServiceClient(
-        config.getKeyTransparencyServiceConfiguration().host(),
-        config.getKeyTransparencyServiceConfiguration().port(),
-        config.getKeyTransparencyServiceConfiguration().tlsCertificate(),
-        config.getKeyTransparencyServiceConfiguration().clientCertificate(),
-        config.getKeyTransparencyServiceConfiguration().clientPrivateKey().value(),
-        keyTransparencyCallbackExecutor);
+    // daonv - Disable keyTransparency
+//    KeyTransparencyServiceClient keyTransparencyServiceClient = new KeyTransparencyServiceClient(
+//        config.getKeyTransparencyServiceConfiguration().host(),
+//        config.getKeyTransparencyServiceConfiguration().port(),
+//        config.getKeyTransparencyServiceConfiguration().tlsCertificate(),
+//        config.getKeyTransparencyServiceConfiguration().clientCertificate(),
+//        config.getKeyTransparencyServiceConfiguration().clientPrivateKey().value(),
+//        keyTransparencyCallbackExecutor);
     SecureValueRecovery2Client secureValueRecovery2Client = new SecureValueRecovery2Client(svr2CredentialsGenerator,
         secureValueRecovery2ServiceExecutor, secureValueRecoveryServiceRetryExecutor, config.getSvr2Configuration());
     SecureStorageClient secureStorageClient = new SecureStorageClient(storageCredentialsGenerator,
@@ -739,7 +741,8 @@ public class WhisperServerService extends Application<WhisperServerConfiguration
     environment.lifecycle().manage(webSocketConnectionEventManager);
     environment.lifecycle().manage(currencyManager);
     environment.lifecycle().manage(registrationServiceClient);
-    environment.lifecycle().manage(keyTransparencyServiceClient);
+    // daonv - Disable keyTransparency
+//    environment.lifecycle().manage(keyTransparencyServiceClient);
     environment.lifecycle().manage(clientReleaseManager);
     environment.lifecycle().manage(virtualThreadPinEventMonitor);
     environment.lifecycle().manage(accountsManager);
@@ -1125,7 +1128,8 @@ public class WhisperServerService extends Application<WhisperServerConfiguration
         new DonationController(clock, zkReceiptOperations, redeemedReceiptsManager, accountsManager, config.getBadges(),
             ReceiptCredentialPresentation::new),
         new KeysController(rateLimiters, keysManager, accountsManager, zkSecretParams, Clock.systemUTC()),
-        new KeyTransparencyController(keyTransparencyServiceClient),
+        // daonv - Disable keyTransparency
+//        new KeyTransparencyController(keyTransparencyServiceClient),
         new MessageController(rateLimiters, messageByteLimitCardinalityEstimator, messageSender, receiptSender,
             accountsManager, messagesManager, phoneNumberIdentifiers, pushNotificationManager, pushNotificationScheduler,
             reportMessageManager, messageDeliveryScheduler, clientReleaseManager,
