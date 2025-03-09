@@ -623,8 +623,9 @@ public class WhisperServerService extends Application<WhisperServerConfiguration
         config.getDirectoryV2Configuration().getDirectoryV2ClientConfiguration());
     ExternalServiceCredentialsGenerator storageCredentialsGenerator = SecureStorageController.credentialsGenerator(
         config.getSecureStorageServiceConfiguration());
-    ExternalServiceCredentialsGenerator paymentsCredentialsGenerator = PaymentsController.credentialsGenerator(
-        config.getPaymentsServiceConfiguration());
+    // tapmedia - Disable payment and related components
+//    ExternalServiceCredentialsGenerator paymentsCredentialsGenerator = PaymentsController.credentialsGenerator(
+//        config.getPaymentsServiceConfiguration());
     ExternalServiceCredentialsGenerator svr2CredentialsGenerator = SecureValueRecovery2Controller.credentialsGenerator(
             config.getSvr2Configuration());
 
@@ -738,13 +739,15 @@ public class WhisperServerService extends Application<WhisperServerConfiguration
 
     ChangeNumberManager changeNumberManager = new ChangeNumberManager(messageSender, accountsManager);
 
-    HttpClient currencyClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_2).connectTimeout(Duration.ofSeconds(10)).build();
-    FixerClient fixerClient = config.getPaymentsServiceConfiguration().externalClients()
-        .buildFixerClient(currencyClient);
-    CoinGeckoClient coinGeckoClient = config.getPaymentsServiceConfiguration().externalClients()
-        .buildCoinGeckoClient(currencyClient);
-    CurrencyConversionManager currencyManager = new CurrencyConversionManager(fixerClient, coinGeckoClient,
-        cacheCluster, config.getPaymentsServiceConfiguration().paymentCurrencies(), recurringJobExecutor, Clock.systemUTC());
+    // tapmedia - Disable payment and related components
+//    HttpClient currencyClient = HttpClient.newBuilder().version(HttpClient.Version.HTTP_2).connectTimeout(Duration.ofSeconds(10)).build();
+//    FixerClient fixerClient = config.getPaymentsServiceConfiguration().externalClients()
+//        .buildFixerClient(currencyClient);
+//    CoinGeckoClient coinGeckoClient = config.getPaymentsServiceConfiguration().externalClients()
+//        .buildCoinGeckoClient(currencyClient);
+//    CurrencyConversionManager currencyManager = new CurrencyConversionManager(fixerClient, coinGeckoClient,
+//        cacheCluster, config.getPaymentsServiceConfiguration().paymentCurrencies(), recurringJobExecutor, Clock.systemUTC());
+
     VirtualThreadPinEventMonitor virtualThreadPinEventMonitor = new VirtualThreadPinEventMonitor(
         virtualThreadEventLoggerExecutor,
         () -> dynamicConfigurationManager.getConfiguration().getVirtualThreads().allowedPinEvents(),
@@ -752,7 +755,7 @@ public class WhisperServerService extends Application<WhisperServerConfiguration
 
     StripeManager stripeManager = new StripeManager(config.getStripe().apiKey().value(), subscriptionProcessorExecutor,
         config.getStripe().idempotencyKeyGenerator().value(), config.getStripe().boostDescription(), config.getStripe().supportedCurrenciesByPaymentMethod());
-    // daonv - disable billing
+    // Tapmedia - disable billing
 //    BraintreeManager braintreeManager = new BraintreeManager(config.getBraintree().merchantId(),
 //        config.getBraintree().publicKey(), config.getBraintree().privateKey().value(),
 //        config.getBraintree().environment(),
@@ -780,9 +783,10 @@ public class WhisperServerService extends Application<WhisperServerConfiguration
     environment.lifecycle().manage(provisioningManager);
     environment.lifecycle().manage(disconnectionRequestManager);
     environment.lifecycle().manage(webSocketConnectionEventManager);
-    environment.lifecycle().manage(currencyManager);
+    // tapmedia - disable payment and related components
+//    environment.lifecycle().manage(currencyManager);
     environment.lifecycle().manage(registrationServiceClient);
-    // daonv - Disable keyTransparency
+    // tapmedia - Disable keyTransparency
 //    environment.lifecycle().manage(keyTransparencyServiceClient);
     environment.lifecycle().manage(clientReleaseManager);
     environment.lifecycle().manage(virtualThreadPinEventMonitor);
@@ -932,7 +936,8 @@ public class WhisperServerService extends Application<WhisperServerConfiguration
             .intercept(new ProhibitAuthenticationInterceptor(grpcClientConnectionManager))
             .addService(new AccountsAnonymousGrpcService(accountsManager, rateLimiters))
             .addService(new KeysAnonymousGrpcService(accountsManager, keysManager, zkSecretParams, Clock.systemUTC()))
-            .addService(new PaymentsGrpcService(currencyManager))
+            // tapmedia - Disable payment and related components
+//            .addService(new PaymentsGrpcService(currencyManager))
             .addService(ExternalServiceCredentialsAnonymousGrpcService.create(accountsManager, config))
             .addService(new ProfileAnonymousGrpcService(accountsManager, profilesManager, profileBadgeConverter, zkSecretParams));
       }
@@ -1169,14 +1174,15 @@ public class WhisperServerService extends Application<WhisperServerConfiguration
         new DonationController(clock, zkReceiptOperations, redeemedReceiptsManager, accountsManager, config.getBadges(),
             ReceiptCredentialPresentation::new),
         new KeysController(rateLimiters, keysManager, accountsManager, zkSecretParams, Clock.systemUTC()),
-        // daonv - Disable keyTransparency
+        // tapmedia - Disable keyTransparency
 //        new KeyTransparencyController(keyTransparencyServiceClient),
         new MessageController(rateLimiters, messageByteLimitCardinalityEstimator, messageSender, receiptSender,
             accountsManager, messagesManager, phoneNumberIdentifiers, pushNotificationManager, pushNotificationScheduler,
             reportMessageManager, messageDeliveryScheduler, clientReleaseManager,
             dynamicConfigurationManager, zkSecretParams, spamChecker, messageMetrics, messageDeliveryLoopMonitor,
             Clock.systemUTC()),
-        new PaymentsController(currencyManager, paymentsCredentialsGenerator),
+        // tapmedia - Disable payment and related components
+//        new PaymentsController(currencyManager, paymentsCredentialsGenerator),
         new ProfileController(clock, rateLimiters, accountsManager, profilesManager, dynamicConfigurationManager,
             profileBadgeConverter, config.getBadges(), cdnS3Client, profileCdnPolicyGenerator, profileCdnPolicySigner,
             config.getCdnConfiguration().bucket(), zkSecretParams, zkProfileOperations, batchIdentityCheckExecutor),
