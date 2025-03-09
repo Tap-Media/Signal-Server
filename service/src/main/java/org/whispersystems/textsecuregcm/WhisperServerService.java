@@ -67,6 +67,7 @@ import org.eclipse.jetty.websocket.server.config.JettyWebSocketServletContainerI
 import org.glassfish.jersey.server.ServerProperties;
 import org.signal.i18n.HeaderControlledResourceBundleLookup;
 import org.signal.libsignal.zkgroup.GenericServerSecretParams;
+import org.signal.libsignal.zkgroup.ServerPublicParams;
 import org.signal.libsignal.zkgroup.ServerSecretParams;
 import org.signal.libsignal.zkgroup.auth.ServerZkAuthOperations;
 import org.signal.libsignal.zkgroup.profiles.ServerZkProfileOperations;
@@ -301,6 +302,17 @@ public class WhisperServerService extends Application<WhisperServerConfiguration
   @Override
   public void initialize(final Bootstrap<WhisperServerConfiguration> bootstrap) {
     // `SecretStore` needs to be initialized before Dropwizard reads the main application config file.
+    ////////////////
+    // tapmedia - test
+    ServerSecretParams secretParams = ServerSecretParams.generate();
+    ServerPublicParams serverPublic = secretParams.getPublicParams();
+    byte[] serializedSecret = secretParams.serialize();
+    byte[] serverPublicSerialized = serverPublic.serialize();
+    String base64Secret = java.util.Base64.getEncoder().encodeToString(serializedSecret);
+    String base64Public = java.util.Base64.getEncoder().encodeToString(serverPublicSerialized);
+    System.out.println("tapmedia -- Generated Server Secret: " + base64Secret);
+    System.out.println("tapmedia -- Generated Server Public: " + base64Public);
+    ///////////////
     final String secretsBundleFileName = requireNonNull(
         System.getProperty(SECRETS_BUNDLE_FILE_NAME_PROPERTY),
         "Application requires property [%s] to be provided".formatted(SECRETS_BUNDLE_FILE_NAME_PROPERTY));
