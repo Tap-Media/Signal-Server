@@ -68,6 +68,8 @@ import javax.annotation.Nullable;
 import org.eclipse.jetty.websocket.server.config.JettyWebSocketServletContainerInitializer;
 import org.glassfish.jersey.server.ServerProperties;
 import org.signal.i18n.HeaderControlledResourceBundleLookup;
+import org.signal.libsignal.protocol.ecc.Curve;
+import org.signal.libsignal.protocol.ecc.ECKeyPair;
 import org.signal.libsignal.zkgroup.GenericServerPublicParams;
 import org.signal.libsignal.zkgroup.GenericServerSecretParams;
 import org.signal.libsignal.zkgroup.ServerPublicParams;
@@ -322,8 +324,9 @@ public class WhisperServerService extends Application<WhisperServerConfiguration
     System.out.println("tapmedia -- Generated Server Public: " + base64Public);
 
     // unidentifiedDelivery cert and private generator:
-    ECPrivateKey privateKey = ECPrivateKey.generate();
-    ECPublicKey publicKey = privateKey.publicKey();
+    ECKeyPair keyPair = Curve.generateKeyPair();
+    ECPrivateKey privateKey = keyPair.getPrivateKey();
+    ECPublicKey publicKey = keyPair.getPublicKey();
     // Print the keys
     System.out.println("unidentifiedDelivery --- Private Key: " + privateKey.serialize());
     System.out.println("unidentifiedDelivery --- Public Key: " + publicKey.serialize());
