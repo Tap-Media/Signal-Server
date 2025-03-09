@@ -49,6 +49,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -72,6 +73,7 @@ import org.signal.libsignal.zkgroup.GenericServerSecretParams;
 import org.signal.libsignal.zkgroup.ServerPublicParams;
 import org.signal.libsignal.zkgroup.ServerSecretParams;
 import org.signal.libsignal.zkgroup.auth.ServerZkAuthOperations;
+import org.signal.libsignal.zkgroup.calllinks.CallLinkSecretParams;
 import org.signal.libsignal.zkgroup.profiles.ServerZkProfileOperations;
 import org.signal.libsignal.zkgroup.receipts.ReceiptCredentialPresentation;
 import org.signal.libsignal.zkgroup.receipts.ServerZkReceiptOperations;
@@ -317,14 +319,18 @@ public class WhisperServerService extends Application<WhisperServerConfiguration
     System.out.println("tapmedia -- Generated Server Secret: " + base64Secret);
     System.out.println("tapmedia -- Generated Server Public: " + base64Public);
 
-    GenericServerSecretParams genericServerSecret = GenericServerSecretParams.generate(new SecureRandom());
-    GenericServerPublicParams genericServerPublic = genericServerSecret.getPublicParams();
-    byte[] serializedGenericSSecret = genericServerSecret.serialize();
-    byte[] genericServerPubliccSerialized = genericServerPublic.serialize();
-    String base64GenericSecret = java.util.Base64.getEncoder().encodeToString(serializedGenericSSecret);
-    String base64GenericPublic = java.util.Base64.getEncoder().encodeToString(genericServerPubliccSerialized);
-    System.out.println("tapmedia -- Generated Generic Server Secret: " + base64GenericSecret);
-    System.out.println("tapmedia -- Generated Generic Server Public: " + base64GenericPublic);
+
+    //Callinks Secret
+    byte[] rootKey = new byte[32];
+    new SecureRandom().nextBytes(rootKey);
+
+    // Encode the root key in Base64 for storage
+    String base64RootKey = java.util.Base64.getEncoder().encodeToString(rootKey);
+    System.out.println("Generated Root Key (Base64): " + base64RootKey);
+    CallLinkSecretParams callLinkSecret = CallLinkSecretParams.deriveFromRootKey(rootKey);
+    byte[] serializedCallLinkSecret = callLinkSecret.serialize();
+    String base64CallLinkSecret = java.util.Base64.getEncoder().encodeToString(serializedCallLinkSecret);
+    System.out.println("tapmedia -- Generated  CallLink Secret: " + base64CallLinkSecret);
 
     ///////////////
     final String secretsBundleFileName = requireNonNull(
