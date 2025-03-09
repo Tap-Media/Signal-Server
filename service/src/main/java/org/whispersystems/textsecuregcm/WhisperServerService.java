@@ -68,6 +68,7 @@ import javax.annotation.Nullable;
 import org.eclipse.jetty.websocket.server.config.JettyWebSocketServletContainerInitializer;
 import org.glassfish.jersey.server.ServerProperties;
 import org.signal.i18n.HeaderControlledResourceBundleLookup;
+import org.signal.libsignal.metadata.certificate.ServerCertificate;
 import org.signal.libsignal.protocol.ecc.Curve;
 import org.signal.libsignal.protocol.ecc.ECKeyPair;
 import org.signal.libsignal.zkgroup.GenericServerPublicParams;
@@ -327,9 +328,16 @@ public class WhisperServerService extends Application<WhisperServerConfiguration
     ECKeyPair keyPair = Curve.generateKeyPair();
     ECPrivateKey privateKey = keyPair.getPrivateKey();
     ECPublicKey publicKey = keyPair.getPublicKey();
+    int keyId = 123; // Example Key ID
+
+    // Generate the server certificate using trustRoot (private key) and serverPublicKey (public key)
+    ServerCertificate serverCertificate = new ServerCertificate(privateKey, keyId, publicKey);
+
+    // Get the serialized certificate or the actual certificate bytes
+    byte[] certificateBytes = serverCertificate.getCertificate();
     // Print the keys
     System.out.println("unidentifiedDelivery --- Private Key: " + Base64.getEncoder().encodeToString(privateKey.serialize()));
-    System.out.println("unidentifiedDelivery --- Public Key: " + Base64.getEncoder().encodeToString(publicKey.serialize()));
+    System.out.println("unidentifiedDelivery --- Cerificate: " + Base64.getEncoder().encodeToString(certificateBytes));
 
     ///////////////
     final String secretsBundleFileName = requireNonNull(
