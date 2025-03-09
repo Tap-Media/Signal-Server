@@ -328,8 +328,9 @@ public class WhisperServerService extends Application<WhisperServerConfiguration
     ECPrivateKey privateKey = keyPair.getPrivateKey();
     ECPublicKey publicKey = keyPair.getPublicKey();
     // Print the keys
-    System.out.println("unidentifiedDelivery --- Private Key: " + privateKey.serialize());
-    System.out.println("unidentifiedDelivery --- Public Key: " + publicKey.serialize());
+    System.out.println("unidentifiedDelivery --- Private Key: " + Base64.getEncoder().encodeToString(privateKey.serialize()));
+    System.out.println("unidentifiedDelivery --- Public Key: " + Base64.getEncoder().encodeToString(publicKey.serialize()));
+
     ///////////////
     final String secretsBundleFileName = requireNonNull(
         System.getProperty(SECRETS_BUNDLE_FILE_NAME_PROPERTY),
