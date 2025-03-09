@@ -296,6 +296,8 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.S3Client;
+import org.signal.libsignal.protocol.ecc.ECPublicKey;
+import org.signal.libsignal.protocol.ecc.ECPrivateKey;
 
 public class WhisperServerService extends Application<WhisperServerConfiguration> {
 
@@ -319,19 +321,12 @@ public class WhisperServerService extends Application<WhisperServerConfiguration
     System.out.println("tapmedia -- Generated Server Secret: " + base64Secret);
     System.out.println("tapmedia -- Generated Server Public: " + base64Public);
 
-
-    //Callinks Secret
-    byte[] rootKey = new byte[32];
-    new SecureRandom().nextBytes(rootKey);
-
-    // Encode the root key in Base64 for storage
-    String base64RootKey = java.util.Base64.getEncoder().encodeToString(rootKey);
-    System.out.println("Generated Root Key (Base64): " + base64RootKey);
-    CallLinkSecretParams callLinkSecret = CallLinkSecretParams.deriveFromRootKey(rootKey);
-    byte[] serializedCallLinkSecret = callLinkSecret.serialize();
-    String base64CallLinkSecret = java.util.Base64.getEncoder().encodeToString(serializedCallLinkSecret);
-    System.out.println("tapmedia -- Generated  CallLink Secret: " + base64CallLinkSecret);
-
+    // unidentifiedDelivery cert and private generator:
+    ECPrivateKey privateKey = ECPrivateKey.generate();
+    ECPublicKey publicKey = privateKey.publicKey();
+    // Print the keys
+    System.out.println("unidentifiedDelivery --- Private Key: " + privateKey.serialize());
+    System.out.println("unidentifiedDelivery --- Public Key: " + publicKey.serialize());
     ///////////////
     final String secretsBundleFileName = requireNonNull(
         System.getProperty(SECRETS_BUNDLE_FILE_NAME_PROPERTY),
