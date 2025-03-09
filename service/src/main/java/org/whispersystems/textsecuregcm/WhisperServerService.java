@@ -713,26 +713,28 @@ public class WhisperServerService extends Application<WhisperServerConfiguration
 
     StripeManager stripeManager = new StripeManager(config.getStripe().apiKey().value(), subscriptionProcessorExecutor,
         config.getStripe().idempotencyKeyGenerator().value(), config.getStripe().boostDescription(), config.getStripe().supportedCurrenciesByPaymentMethod());
-    BraintreeManager braintreeManager = new BraintreeManager(config.getBraintree().merchantId(),
-        config.getBraintree().publicKey(), config.getBraintree().privateKey().value(),
-        config.getBraintree().environment(),
-        config.getBraintree().supportedCurrenciesByPaymentMethod(), config.getBraintree().merchantAccounts(),
-        config.getBraintree().graphqlUrl(), currencyManager, config.getBraintree().pubSubPublisher().build(),
-        config.getBraintree().circuitBreaker(), subscriptionProcessorExecutor,
-        subscriptionProcessorRetryExecutor);
-    GooglePlayBillingManager googlePlayBillingManager = new GooglePlayBillingManager(
-        new ByteArrayInputStream(config.getGooglePlayBilling().credentialsJson().value().getBytes(StandardCharsets.UTF_8)),
-        config.getGooglePlayBilling().packageName(),
-        config.getGooglePlayBilling().applicationName(),
-        config.getGooglePlayBilling().productIdToLevel(),
-        googlePlayBillingExecutor);
-    AppleAppStoreManager appleAppStoreManager = new AppleAppStoreManager(
-        config.getAppleAppStore().env(), config.getAppleAppStore().bundleId(), config.getAppleAppStore().appAppleId(),
-        config.getAppleAppStore().issuerId(), config.getAppleAppStore().keyId(),
-        config.getAppleAppStore().encodedKey().value(), config.getAppleAppStore().subscriptionGroupId(),
-        config.getAppleAppStore().productIdToLevel(),
-        config.getAppleAppStore().appleRootCerts(),
-        config.getAppleAppStore().retry(), appleAppStoreExecutor, appleAppStoreRetryExecutor);
+    // daonv - disable billing
+//    BraintreeManager braintreeManager = new BraintreeManager(config.getBraintree().merchantId(),
+//        config.getBraintree().publicKey(), config.getBraintree().privateKey().value(),
+//        config.getBraintree().environment(),
+//        config.getBraintree().supportedCurrenciesByPaymentMethod(), config.getBraintree().merchantAccounts(),
+//        config.getBraintree().graphqlUrl(), currencyManager, config.getBraintree().pubSubPublisher().build(),
+//        config.getBraintree().circuitBreaker(), subscriptionProcessorExecutor,
+//        subscriptionProcessorRetryExecutor);
+    // daonv - Disable google billing and apple appstore manager
+//    GooglePlayBillingManager googlePlayBillingManager = new GooglePlayBillingManager(
+//        new ByteArrayInputStream(config.getGooglePlayBilling().credentialsJson().value().getBytes(StandardCharsets.UTF_8)),
+//        config.getGooglePlayBilling().packageName(),
+//        config.getGooglePlayBilling().applicationName(),
+//        config.getGooglePlayBilling().productIdToLevel(),
+//        googlePlayBillingExecutor);
+//    AppleAppStoreManager appleAppStoreManager = new AppleAppStoreManager(
+//        config.getAppleAppStore().env(), config.getAppleAppStore().bundleId(), config.getAppleAppStore().appAppleId(),
+//        config.getAppleAppStore().issuerId(), config.getAppleAppStore().keyId(),
+//        config.getAppleAppStore().encodedKey().value(), config.getAppleAppStore().subscriptionGroupId(),
+//        config.getAppleAppStore().productIdToLevel(),
+//        config.getAppleAppStore().appleRootCerts(),
+//        config.getAppleAppStore().retry(), appleAppStoreExecutor, appleAppStoreRetryExecutor);
 
     environment.lifecycle().manage(apnSender);
     environment.lifecycle().manage(pushNotificationScheduler);
@@ -1153,16 +1155,17 @@ public class WhisperServerService extends Application<WhisperServerConfiguration
             phoneNumberIdentifiers, rateLimiters, accountsManager, registrationFraudChecker,
             dynamicConfigurationManager, clock)
     );
-    if (config.getSubscription() != null && config.getOneTimeDonations() != null) {
-      SubscriptionManager subscriptionManager = new SubscriptionManager(subscriptions,
-          List.of(stripeManager, braintreeManager, googlePlayBillingManager, appleAppStoreManager),
-          zkReceiptOperations, issuedReceiptsManager);
-      commonControllers.add(new SubscriptionController(clock, config.getSubscription(), config.getOneTimeDonations(),
-          subscriptionManager, stripeManager, braintreeManager, googlePlayBillingManager, appleAppStoreManager,
-          profileBadgeConverter, bankMandateTranslator));
-      commonControllers.add(new OneTimeDonationController(clock, config.getOneTimeDonations(), stripeManager, braintreeManager,
-          zkReceiptOperations, issuedReceiptsManager, oneTimeDonationsManager));
-    }
+    // daonv - disable billing apple and google
+//    if (config.getSubscription() != null && config.getOneTimeDonations() != null) {
+//      SubscriptionManager subscriptionManager = new SubscriptionManager(subscriptions,
+//          List.of(stripeManager, braintreeManager, googlePlayBillingManager, appleAppStoreManager),
+//          zkReceiptOperations, issuedReceiptsManager);
+//      commonControllers.add(new SubscriptionController(clock, config.getSubscription(), config.getOneTimeDonations(),
+//          subscriptionManager, stripeManager, braintreeManager, googlePlayBillingManager, appleAppStoreManager,
+//          profileBadgeConverter, bankMandateTranslator));
+//      commonControllers.add(new OneTimeDonationController(clock, config.getOneTimeDonations(), stripeManager, braintreeManager,
+//          zkReceiptOperations, issuedReceiptsManager, oneTimeDonationsManager));
+//    }
 
     for (Object controller : commonControllers) {
       environment.jersey().register(controller);
