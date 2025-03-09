@@ -43,6 +43,7 @@ import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.PrivateKey;
+import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.time.Clock;
 import java.time.Duration;
@@ -66,6 +67,7 @@ import javax.annotation.Nullable;
 import org.eclipse.jetty.websocket.server.config.JettyWebSocketServletContainerInitializer;
 import org.glassfish.jersey.server.ServerProperties;
 import org.signal.i18n.HeaderControlledResourceBundleLookup;
+import org.signal.libsignal.zkgroup.GenericServerPublicParams;
 import org.signal.libsignal.zkgroup.GenericServerSecretParams;
 import org.signal.libsignal.zkgroup.ServerPublicParams;
 import org.signal.libsignal.zkgroup.ServerSecretParams;
@@ -306,12 +308,24 @@ public class WhisperServerService extends Application<WhisperServerConfiguration
     // tapmedia - test
     ServerSecretParams secretParams = ServerSecretParams.generate();
     ServerPublicParams serverPublic = secretParams.getPublicParams();
+
     byte[] serializedSecret = secretParams.serialize();
     byte[] serverPublicSerialized = serverPublic.serialize();
+
     String base64Secret = java.util.Base64.getEncoder().encodeToString(serializedSecret);
     String base64Public = java.util.Base64.getEncoder().encodeToString(serverPublicSerialized);
     System.out.println("tapmedia -- Generated Server Secret: " + base64Secret);
     System.out.println("tapmedia -- Generated Server Public: " + base64Public);
+
+    GenericServerSecretParams genericServerSecret = GenericServerSecretParams.generate(new SecureRandom());
+    GenericServerPublicParams genericServerPublic = genericServerSecret.getPublicParams();
+    byte[] serializedGenericSSecret = genericServerSecret.serialize();
+    byte[] genericServerPubliccSerialized = genericServerPublic.serialize();
+    String base64GenericSecret = java.util.Base64.getEncoder().encodeToString(serializedGenericSSecret);
+    String base64GenericPublic = java.util.Base64.getEncoder().encodeToString(genericServerPubliccSerialized);
+    System.out.println("tapmedia -- Generated Generic Server Secret: " + base64GenericSecret);
+    System.out.println("tapmedia -- Generated Generic Server Public: " + base64GenericPublic);
+
     ///////////////
     final String secretsBundleFileName = requireNonNull(
         System.getProperty(SECRETS_BUNDLE_FILE_NAME_PROPERTY),
