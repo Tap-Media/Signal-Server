@@ -337,7 +337,8 @@ public class WhisperServerService extends Application<WhisperServerConfiguration
     byte[] certificateBytes = serverCertificate.getCertificate();
     // Print the keys
     System.out.println("unidentifiedDelivery --- Private Key: " + Base64.getEncoder().encodeToString(privateKey.serialize()));
-    System.out.println("unidentifiedDelivery --- Cerificate: " + Base64.getEncoder().encodeToString(certificateBytes));
+    System.out.println("unidentifiedDelivery --- Public Key (UNIDENTIFIED_SENDER_TRUST_ROOT): " + Base64.getEncoder().encodeToString(publicKey.serialize()));
+    System.out.println("unidentifiedDelivery --- Server Cerificate: " + Base64.getEncoder().encodeToString(certificateBytes));
 
     ///////////////
     final String secretsBundleFileName = requireNonNull(
