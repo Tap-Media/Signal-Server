@@ -240,8 +240,6 @@ public class Accounts {
           .build();
 
       try {
-        ObjectMapper mapper = new ObjectMapper();
-        log.info("DynamoDB request JSON: {}", mapper.writerWithDefaultPrettyPrinter().writeValueAsString(request));
         dynamoDbClient.transactWriteItems(request);
       } catch (final TransactionCanceledException e) {
 
@@ -283,8 +281,7 @@ public class Accounts {
 
         // this shouldn't happen
         throw new RuntimeException("could not create account: " + extractCancellationReasonCodes(e));
-      } catch (JsonProcessingException e) {
-          throw new RuntimeException(e);
+
       }
     } finally {
       sample.stop(CREATE_TIMER);
