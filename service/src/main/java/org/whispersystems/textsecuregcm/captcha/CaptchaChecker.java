@@ -96,8 +96,9 @@ public class CaptchaChecker {
       Metrics.counter(INVALID_ACTION_COUNTER_NAME, "action", action).increment();
       throw new BadRequestException("invalid captcha action");
     }
-
-    final Set<String> allowedSiteKeys = client.validSiteKeys(parsedAction);
+	
+	// tapmedia - Hardcode site-key
+    final Set<String> allowedSiteKeys = Set.of("fb2075ce-dae2-494c-ac56-a876abc4327c");
     if (!allowedSiteKeys.contains(siteKey)) {
       logger.debug("invalid site-key {}, action={}, token={}", siteKey, action, token);
       Metrics.counter(INVALID_SITEKEY_COUNTER_NAME, "action", action).increment();
