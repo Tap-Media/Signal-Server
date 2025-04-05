@@ -8,6 +8,7 @@ import static com.codahale.metrics.MetricRegistry.name;
 import static java.util.Objects.requireNonNull;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
@@ -239,6 +240,8 @@ public class Accounts {
           .build();
 
       try {
+        ObjectMapper mapper = new ObjectMapper();
+        log.info("DynamoDB request JSON: {}", mapper.writerWithDefaultPrettyPrinter().writeValueAsString(request));
         dynamoDbClient.transactWriteItems(request);
       } catch (final TransactionCanceledException e) {
 
@@ -280,6 +283,8 @@ public class Accounts {
 
         // this shouldn't happen
         throw new RuntimeException("could not create account: " + extractCancellationReasonCodes(e));
+      } catch (JsonProcessingException e) {
+          throw new RuntimeException(e);
       }
     } finally {
       sample.stop(CREATE_TIMER);
