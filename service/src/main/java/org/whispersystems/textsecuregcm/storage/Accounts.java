@@ -240,6 +240,8 @@ public class Accounts {
           .build();
 
       try {
+        System.out.println(request.toString());
+        log.warn("tapmedia -  dynamoDbClient.transactWriteItems: {}", request.toString());
         dynamoDbClient.transactWriteItems(request);
       } catch (final TransactionCanceledException e) {
 
