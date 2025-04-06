@@ -307,6 +307,7 @@ public class AccountsManager extends RedisPubSubAdapter<String, String> implemen
         String previousPushTokenType = null;
 
         try {
+          logger.warn("tapmedia:  phoneNumberIdentifiers: {}", number);
           accounts.create(account, keysManager.buildWriteItemsForNewDevice(account.getIdentifier(IdentityType.ACI),
               account.getIdentifier(IdentityType.PNI),
               Device.PRIMARY_ID,
