@@ -1,7 +1,7 @@
 name: Create and publish a Docker image to ECR
 on:
   push:
-    branches: ['main', 'develop']
+    branches: ['main', 'develop', 'yoush']
 
 env:
   IMAGE_REPO_NAME: 767828741221.dkr.ecr.ap-southeast-1.amazonaws.com/signal/signal-server
