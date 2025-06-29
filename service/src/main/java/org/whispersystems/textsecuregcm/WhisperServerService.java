@@ -328,7 +328,7 @@ public class WhisperServerService extends Application<WhisperServerConfiguration
     ECKeyPair keyPair = Curve.generateKeyPair();
     ECPrivateKey privateKey = keyPair.getPrivateKey();
     ECPublicKey publicKey = keyPair.getPublicKey();
-    int keyId = 123; // Example Key ID
+    int keyId = 1; // Signal default Key ID
 
     // Generate the server certificate using trustRoot (private key) and serverPublicKey (public key)
     ServerCertificate serverCertificate = new ServerCertificate(privateKey, keyId, publicKey);
